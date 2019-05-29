@@ -13,22 +13,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/*@Configuration
-
-@EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "ru.puga1chev.crudspring.security.repository")
+//@EnableTransactionManagement
+@Configuration
 @EnableConfigurationProperties
-@EntityScan(basePackages = {"ru.puga1chev.crudspring.security.security"})
-*/
-
 @SpringBootApplication(
 		exclude = {
 				/*DataSourceAutoConfiguration.class,
 				HibernateJpaAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class
-				SecurityAutoConfiguration.class*/
-		}/*,
-		scanBasePackages = "ru.puga1chev.crudspring"*/
+				DataSourceTransactionManagerAutoConfiguration.class*/
+				SecurityAutoConfiguration.class
+		},
+		scanBasePackages = "ru.puga1chev.crudspring"
 )
 public class Application {
 

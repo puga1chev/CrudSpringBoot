@@ -1,4 +1,4 @@
-package ru.puga1chev.crudspring.security.entity;
+package ru.puga1chev.crudspring.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 

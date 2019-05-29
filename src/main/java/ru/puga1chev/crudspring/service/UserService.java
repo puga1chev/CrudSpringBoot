@@ -1,34 +1,38 @@
-
 package ru.puga1chev.crudspring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.puga1chev.crudspring.security.entity.Role;
-import ru.puga1chev.crudspring.security.entity.User;
-import ru.puga1chev.crudspring.security.repository.RoleRepository;
-import ru.puga1chev.crudspring.security.repository.UserRepository;
-
-import java.util.Optional;
+import ru.puga1chev.crudspring.dao.UserRepository;
+import ru.puga1chev.crudspring.entity.User;
+import java.util.*;
 
 @Service
-public class UserService
-{
-	@Autowired
-	private RoleRepository roleRepository;
-	
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Transactional(transactionManager="securityTransactionManager")
-	public Optional<User> getUsers()
-	{
-		return userRepository.findById(0L);
-	}
+public class UserService implements ObjectService<User> {
 
-	@Transactional(transactionManager="ordersTransactionManager")
-	public Optional <Role> getOrders()
-	{
-		return roleRepository.findById(0L);
-	}
+    @Autowired
+    private UserRepository repository;
+
+    public void save(User user) {
+        user = repository.save(user);
+    }
+    
+    public ArrayList<User> findAll(String sortedBy) {
+        // todo: sorted
+        return (ArrayList<User>) repository.findAll();
+    }
+
+    public Optional<User> getById(Long id) {
+
+        return repository.findById(id);
+    }
+
+    public void deleteById(Long id) {
+
+         repository.deleteById(id);
+    }
+
+    @Override
+    public ArrayList<User> findByLogin(String login) {
+        return (ArrayList<User>) repository.findByLogin(login);
+    }
 }

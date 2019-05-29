@@ -25,25 +25,15 @@ public class AuthenticationController {
 
     private final static Logger logger = Logger.getLogger(AuthenticationController.class);
 
-    @Value("${spring.application.name}")
-    String appName;
-
-/*    @Autowired
-    private ObjectService<User> userService;
-    @Autowired
-    private ObjectService<Role> roleService;*/
-
     @RequestMapping(value = "/", method = GET)
     public String indexPage(Model model) {
 
-//        model.addAttribute("test", "test string");
-        return "templates/index";
+        return "index";
     }
-/*
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage(Model model) {
 
-        model.addAttribute("test", "test string");
         return "login";
     }
 
@@ -54,5 +44,5 @@ public class AuthenticationController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return "redirect:/login?logout=true";
-    }*/
+    }
 }

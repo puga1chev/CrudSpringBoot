@@ -1,13 +1,15 @@
-package ru.puga1chev.crudspring.security.entity;
+package ru.puga1chev.crudspring.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-@Entity
+@Entity(name = "users")
 @Table(name = "users")
 public class User implements UserDetails {
 
@@ -110,5 +112,14 @@ public class User implements UserDetails {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isAdmin() {
+        for (Role role : getRoles()) {
+            if (role.getRolename().equals("ADMIN")){
+                return true;
+            }
+        }
+        return false;
     }
 }

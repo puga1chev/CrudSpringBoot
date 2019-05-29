@@ -1,15 +1,19 @@
 package ru.puga1chev.crudspring.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import ru.puga1chev.crudspring.handler.UrlAuthenticationSuccessHandler;
@@ -18,26 +22,28 @@ import ru.puga1chev.crudspring.handler.UrlAuthenticationSuccessHandler;
 @EnableWebSecurity(debug = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .anyRequest()
-                .permitAll()
-                .and().csrf().disable();
+    @Qualifier("userDetailsServiceImpl")
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
-/*    @Override
+    @Override
     protected void configure(AuthenticationManagerBuilder auth)
             throws Exception {
+
         auth
-                .inMemoryAuthentication()
-                .withUser("user")
-                .password("password")
-                .roles("USER")
-                .and()
-                .withUser("admin")
-                .password("admin")
-                .roles("USER", "ADMIN");
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(NoOpPasswordEncoder.getInstance());
+    }
+
+
+    @Bean
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(){
+        return new UrlAuthenticationSuccessHandler();
     }
 
     @Override
@@ -45,15 +51,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeRequests()
-                .antMatchers("/css/**").permitAll()
-                .antMatchers("/resources/**").permitAll()
-                .antMatchers("**").permitAll()
-                .antMatchers("/login").permitAll()
-                .anyRequest().authenticated().and()
-                .formLogin()
-                .loginPage("/login");
+                    .antMatchers("/resources/**", "/*", "/login", "/webjars/**").permitAll()
+                    .antMatchers("/admin/**").hasRole("ADMIN")
+                    .antMatchers("/user").hasAnyRole("USER", "ADMIN")
+                    .anyRequest().authenticated()
+                .and()
+                    .formLogin()
+                    .loginPage("/login").usernameParameter("username").passwordParameter("password")
+                    .successHandler(myAuthenticationSuccessHandler())
+                    .failureUrl("/login?error")
+                    .permitAll()
+                .and()
+                    .logout()
+                    .logoutSuccessUrl("/login")
+                    .invalidateHttpSession(true)
+                    .permitAll()
 
-    }*/
-
-
+                .and()
+                    .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and()
+                    .headers()
+                    .httpStrictTransportSecurity()
+                    .maxAgeInSeconds(0)
+                    .includeSubDomains(true)
+        ;
+    }
 }
